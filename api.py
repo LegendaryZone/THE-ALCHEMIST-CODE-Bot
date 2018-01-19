@@ -15,7 +15,7 @@ class API(object):
 		self.s.verify=False
 		self.s.headers.update({'User-Agent':'Mozilla/5.0 (iPhone; CPU iPhone OS 10_2 like Mac OS X) AppleWebKit/602.3.12 (KHTML, like Gecko) Mobile/14C92','Content-Type':'application/json; charset=utf-8'})
 		self.base='https://app.alcww.gumi.sg/'
-		self.app_ver=1720
+		self.app_ver=1721
 		self.ticket=1
 		self.udid='00000000-0000-0000-0000-000000000000'
 		self.idfa='00000000-0000-0000-0000-000000000000'
