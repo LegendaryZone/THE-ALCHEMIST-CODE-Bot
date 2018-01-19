@@ -33,7 +33,7 @@ class API(object):
 		
 	def setdeviceid(self,id):
 		self.device_id=id
-				
+
 	def setsecretkey(self,id):
 		self.secret_key=id
 		
