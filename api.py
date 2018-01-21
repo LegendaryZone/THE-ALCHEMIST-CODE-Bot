@@ -116,10 +116,13 @@ class API(object):
 	def chat_message(self):
 		return self.callAPI('award',{"ticket":26,"param":{"start_id":0,"channel":1,"limit":30,"exclude_id":0}})
 
-	def trophy_exec(self,work):
+	def trophy_exec(self,work,force=False):
 		done=[]
 		for w in work:
-			done.append({'iname':w[0],'pts':w[1],'ymd':self.getymd(),'rewarded_at':self.getymd()})
+			if force:
+				done.append({'iname':w[0],'pts':w[1],'ymd':self.getymd(),'rewarded_at':self.getymd()})
+			else:
+				done.append({'iname':w[0],'pts':w[1],'ymd':self.getymd()})
 		data={'ticket':self.ticket,'param':{'trophyprogs':done}}
 		return self.callAPI('trophy/exec',data)
 		
@@ -135,7 +138,21 @@ class API(object):
 	def getymd(self):
 		return datetime.datetime.fromtimestamp(int(time.time())).strftime("%y%m%d")
 		
-	def bingo_exec(self,data):
+	def bingo_exec(self,work,force=False):
+		done=[]
+		for w in work:
+			parent=w[0].split('_')
+			if force:
+				if len(parent)==2:
+					done.append({'iname':w[0],'parent':'','pts':w[1],'ymd':self.getymd(),'rewarded_at':self.getymd()})
+				else:
+					done.append({'iname':w[0],'parent':'%s_%s'%(parent[0],parent[1]),'pts':w[1],'ymd':self.getymd(),'rewarded_at':self.getymd()})
+			else:
+				if len(parent)==2:
+					done.append({'iname':w[0],'parent':'%s_%s'%(parent[0],parent[1]),'pts':w[1],'ymd':self.getymd()})
+				else:
+					done.append({'iname':w[0],'parent':'%s_%s'%(parent[0],parent[1]),'pts':w[1],'ymd':self.getymd()})
+		data={'ticket':self.ticket,'param':{'bingoprogs':done}}
 		return self.callAPI('bingo/exec',data)
 				
 	def tut_update(self,tut):
@@ -152,6 +169,19 @@ class API(object):
 	
 	def setlanguage(self,lang):
 		return self.callAPI('setlanguage',{"ticket":self.ticket,"param":{"lang":lang}})
+	
+	def getmail(self,isPeriod):
+		mails=self.mail(1,isPeriod,0)
+		mailids=[]
+		for m in mails['body']['mails']['list']:
+			mailids.append(m['mid'])
+		return self.mailread(mailids,1,1)
+
+	def mail(self,page,isPeriod,isRead):
+		return self.callAPI('mail',{"ticket":self.ticket,"param":{"page":page,"isPeriod":isPeriod,"isRead":isRead}})
+
+	def mailread(self,mailids,page,period):
+		return self.callAPI('mail/read',{"ticket":self.ticket,"param":{"mailids":mailids,"page":page,"period":period}})
 	
 	def parseReward(self,input):
 		fin=[]
@@ -242,7 +272,7 @@ class API(object):
 		self.doMission('QE_ST_NO_010001')
 		self.tut_update(2539)
 		self.award()
-		self.getmail()
+		self.getmail(1)
 		self.tut_update(8195)
 		self.award()
 		self.log('tut done')
